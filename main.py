@@ -61,9 +61,7 @@ if __name__ == '__main__':
         #TODO Fix updating
         print("Update")
         fig, ax = graph.plot(strat[1], symbol)
-        fig.close()
         fig.canvas.draw()
-        fig.show()
             
     t.close_all()
     print("Market Closed")
