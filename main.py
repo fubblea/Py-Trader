@@ -26,10 +26,13 @@ if __name__ == '__main__':
     
     print(f"[{datetime.datetime.now()}]")
     print(f"Bot started with focus on {symbol}")
+    
+    #Main Loop
     while True:
-        
         with print_supress.suppress_stdout_stderr():
-            current_call = t.strat(symbol)
+            strat = t.strat(symbol)
+        
+        current_call = strat[0]
         
         if current_call == last_call:
             pass
@@ -47,3 +50,5 @@ if __name__ == '__main__':
             
             print(f"[{datetime.datetime.now()}]")
             print(f"New Call: Sold {target} shares of {symbol}")
+            
+        t.update_stop(current_call, target, strat[1])

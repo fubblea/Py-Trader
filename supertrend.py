@@ -1,9 +1,12 @@
+import numpy as np
+import yfinance as yf
+import pandas_datareader as pdr
+import pandas as pd
+import alpaca_trade_api as alpaca
+import os
+import dotenv
 class Bot(object):    
     def __init__ (self, symbol):
-        import alpaca_trade_api as alpaca
-        import os
-        import dotenv
-        
         dotenv.load_dotenv()
         
         self.key = os.getenv("API_KEY")
@@ -13,20 +16,23 @@ class Bot(object):
         self.symbol = symbol
         self.current_order = None
             
-    def submit_order(self, type, target):
+    def update_stop(self, side, target, price):
+        
+        if side == "BUY":
+            self.current_order = self.api.submit_order(self.symbol, target, 'sell','stop','fok', price)
             
-        if type == "BUY":
+        elif side == "SELL":
+            self.current_order = self.api.submit_order(self.symbol, target, 'buy','stop','fok', price)
+    
+    def submit_order(self, side, target):
+            
+        if side == "BUY":
             self.current_order = self.api.submit_order(self.symbol, target, 'buy','market','fok')
             
-        elif type == "SELL":
+        elif side == "SELL":
             self.current_order = self.api.submit_order(self.symbol, target, 'sell','market','fok')
             
-    def strat(self, symbol):    
-        import numpy as np
-        import yfinance as yf
-        import pandas_datareader as pdr
-        import pandas as pd
-
+    def analysis(self, symbol):    
         data =yf.download(symbol, period="10m",interval="1m")
         data=data.reset_index(drop=True)
 
@@ -113,4 +119,11 @@ class Bot(object):
             else:
                 data.loc[i,"ST_BUY_SELL"]="SELL"
         
-        return data.iloc[-1, -1]
+        return data
+
+    def strat(self, symbol):
+        data = self.analysis(symbol)
+        
+        trigger = data.iloc[-1, -1]
+        stop_price = data["ST"].iloc[-1]
+        return [trigger, stop_price]
