@@ -1,5 +1,7 @@
-class Bot(object):
+class Bot(object):    
     def __init__ (self, symbol):
+        import alpaca_trade_api as alpaca
+        
         self.key = 'PK1ZBENYCZ4YGCXIHT5P'
         self.secret = 'WPM7Fr3RxYzZrUh4i7rkgxGn9xSuPkUXgFYwliOa'
         self.alpaca_endpoint = 'https://paper-api.alpaca.markets'
@@ -22,7 +24,7 @@ class Bot(object):
         elif type == "SELL":
             self.current_order = self.api.submit_order(self.symbol, target, 'sell','market','fok')
             
-    def strat(symbol):    
+    def strat(self, symbol):    
         import numpy as np
         import yfinance as yf
         import pandas_datareader as pdr

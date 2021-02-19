@@ -1,5 +1,3 @@
-import alpaca_trade_api as alpaca
-import sys
 import supertrend
 import datetime
 import print_supress
@@ -10,8 +8,8 @@ if __name__ == '__main__':
     #TODO Send commands to running program
     
     symbol = "GME"
-    last_call = "BUY"
-    target = 50
+    last_call = "SELL"
+    target = 500
     t = supertrend.Bot(symbol)
     
     print(f"[{datetime.datetime.now()}]")
