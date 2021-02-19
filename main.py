@@ -1,15 +1,27 @@
 import supertrend
 import datetime
 import print_supress
+import argparse
 
 if __name__ == '__main__':
     #TODO Implement last call through sessions
     #TODO Program reversals
     #TODO Send commands to running program
     
-    symbol = "GME"
-    last_call = "SELL"
-    target = 500
+    parser = argparse.ArgumentParser()
+    parser.add_argument("symbol", help="The symbol you want the bot to focus on")
+    parser.add_argument("bias", help="Buying or selling bias")
+    parser.add_argument("target", help="Target shares")
+    args = parser.parse_args()
+    
+    symbol = args.symbol
+    
+    if args.bias == "buy":
+        last_call = "SELL"
+    else:
+        last_call = "BUY"
+    
+    target = args.target
     t = supertrend.Bot(symbol)
     
     print(f"[{datetime.datetime.now()}]")

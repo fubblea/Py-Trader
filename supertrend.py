@@ -1,20 +1,17 @@
 class Bot(object):    
     def __init__ (self, symbol):
         import alpaca_trade_api as alpaca
+        import os
+        import dotenv
         
-        self.key = 'PK1ZBENYCZ4YGCXIHT5P'
-        self.secret = 'WPM7Fr3RxYzZrUh4i7rkgxGn9xSuPkUXgFYwliOa'
-        self.alpaca_endpoint = 'https://paper-api.alpaca.markets'
+        dotenv.load_dotenv()
+        
+        self.key = os.getenv("API_KEY")
+        self.secret = os.getenv("SECRET_KEY")
+        self.alpaca_endpoint = os.getenv("ENDPOINT")
         self.api = alpaca.REST(self.key, self.secret, self.alpaca_endpoint)
         self.symbol = symbol
         self.current_order = None
-        
-        """
-        try:
-            self.position = int(self.api.get_position(self.symbol).qty)
-        except:
-            self.position = 0
-        """
             
     def submit_order(self, type, target):
             
