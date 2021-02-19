@@ -19,10 +19,12 @@ class Bot(object):
     def update_stop(self, side, target, price):
         
         if side == "BUY":
-            self.current_order = self.api.submit_order(self.symbol, target, 'sell','stop','fok', price)
+            self.current_order = self.api.submit_order(self.symbol, target, 'sell','stop',
+                                                       'fok', stop_price = price)
             
         elif side == "SELL":
-            self.current_order = self.api.submit_order(self.symbol, target, 'buy','stop','fok', price)
+            self.current_order = self.api.submit_order(self.symbol, target, 'buy','stop',
+                                                       'fok', stop_price = price)
     
     def submit_order(self, side, target):
             
