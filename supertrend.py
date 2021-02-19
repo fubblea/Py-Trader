@@ -48,8 +48,8 @@ class Bot(object):
             else:
                 data.loc[i,'ATR'] = ((data.loc[i-1,'ATR'] * 13)+data.loc[i,'TR'])/14
 
-        data['BUB'] = round(((data["High"] + data["Low"]) / 2) + (3 * data["ATR"]),2)
-        data['BLB'] = round(((data["High"] + data["Low"]) / 2) - (3 * data["ATR"]),2)
+        data['BUB'] = round(((data["High"] + data["Low"]) / 2) + (2 * data["ATR"]),2)
+        data['BLB'] = round(((data["High"] + data["Low"]) / 2) - (2 * data["ATR"]),2)
 
 
         # FINAL UPPERBAND = IF( (Current BASICUPPERBAND < Previous FINAL UPPERBAND) or (Previous Close > Previous FINAL UPPERBAND))
