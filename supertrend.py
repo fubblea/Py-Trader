@@ -1,4 +1,5 @@
 import datetime
+import time
 import os
 
 import alpaca_trade_api as alpaca
@@ -22,6 +23,7 @@ class Bot(object):
         
     def get_positions(self):
         print("Open Positions:")
+        time.sleep(1)
         print(self.api.list_positions())
     
     def submit_order(self, side, target):
@@ -45,7 +47,7 @@ class Bot(object):
             print(f"Sold {target} shares in {self.symbol}")
             
     def analysis(self, symbol):    
-        data =yf.download(symbol, period="5h",interval="30m")
+        data =yf.download(symbol, period="30m",interval="5m")
         data=data.reset_index(drop=True)
 
         data['tr0'] = abs(data["High"] - data["Low"])
