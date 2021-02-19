@@ -56,10 +56,10 @@ class Bot(object):
             if i == 0:
                 data.loc[i,'ATR'] = 0.00 #data['ATR'].iat[0]
             else:
-                data.loc[i,'ATR'] = ((data.loc[i-1,'ATR'] * 13)+data.loc[i,'TR'])/14
+                data.loc[i,'ATR'] = ((data.loc[i-1,'ATR'] * 9)+data.loc[i,'TR'])/10
 
-        data['BUB'] = round(((data["High"] + data["Low"]) / 2) + (2 * data["ATR"]),2)
-        data['BLB'] = round(((data["High"] + data["Low"]) / 2) - (2 * data["ATR"]),2)
+        data['BUB'] = round(((data["High"] + data["Low"]) / 2) + (3 * data["ATR"]),2)
+        data['BLB'] = round(((data["High"] + data["Low"]) / 2) - (3 * data["ATR"]),2)
 
 
         # FINAL UPPERBAND = IF( (Current BASICUPPERBAND < Previous FINAL UPPERBAND) or (Previous Close > Previous FINAL UPPERBAND))
