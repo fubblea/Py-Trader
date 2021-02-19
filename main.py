@@ -22,7 +22,6 @@ if __name__ == '__main__':
         last_call = "BUY"
     
     target = args.target
-    last_stop = 0
     t = supertrend.Bot(symbol)
     
     print(f"[{datetime.datetime.now()}]")
@@ -40,19 +39,16 @@ if __name__ == '__main__':
         
         elif current_call == "BUY":
             last_call = current_call
-            t.submit_order("BUY", target)
+            t.submit_order("BUY", target, strat[1])
             
             print(f"[{datetime.datetime.now()}]")
             print(f"New Call: Bought {target} shares of {symbol}")
+            print(f"Set stop at {strat[1]}")
         
         elif current_call == "SELL":
             last_call = current_call
-            t.submit_order("SELL", target)
+            t.submit_order("SELL", target, strat[1])
             
             print(f"[{datetime.datetime.now()}]")
             print(f"New Call: Sold {target} shares of {symbol}")
-            
-        if strat[1] != last_stop:
-            t.update_stop(current_call, target, strat[1])
-            last_stop = strat[1]
-            print(f"Set new stop loss at {strat[1]}")
+            print(f"Set stop at {strat[1]}")

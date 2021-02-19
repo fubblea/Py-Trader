@@ -15,27 +15,29 @@ class Bot(object):
         self.api = alpaca.REST(self.key, self.secret, self.alpaca_endpoint)
         self.symbol = symbol
         self.current_order = None
-            
-    def update_stop(self, side, target, price):
         
-        if side == "BUY":
-            self.current_order = self.api.submit_order(self.symbol, target, 'sell','stop',
-                                                       'fok', stop_price = price)
-            
-        elif side == "SELL":
-            self.current_order = self.api.submit_order(self.symbol, target, 'buy','stop',
-                                                       'fok', stop_price = price)
-    
-    def submit_order(self, side, target):
+    def submit_order(self, side, target, stop_price):
             
         if side == "BUY":
-            self.current_order = self.api.submit_order(self.symbol, target, 'buy','market','fok')
+            self.current_order = self.api.submit_order(symbol=self.symbol, 
+                                                       qty=target, 
+                                                       side='buy',
+                                                       time_in_force='gtc',
+                                                       type='market',
+                                                       order_class='oto',
+                                                       stop_loss=dict(stop_price=stop_price))
             
         elif side == "SELL":
-            self.current_order = self.api.submit_order(self.symbol, target, 'sell','market','fok')
+            self.current_order = self.api.submit_order(symbol=self.symbol, 
+                                                       qty=target, 
+                                                       side='sell',
+                                                       time_in_force='gtc',
+                                                       type='market',
+                                                       order_class='oto',
+                                                       stop_loss=dict(stop_price=stop_price))
             
     def analysis(self, symbol):    
-        data =yf.download(symbol, period="10m",interval="1m")
+        data =yf.download(symbol, period="5h",interval="30m")
         data=data.reset_index(drop=True)
 
         data['tr0'] = abs(data["High"] - data["Low"])
