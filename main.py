@@ -7,6 +7,7 @@ import print_supress
 if __name__ == '__main__':
     #TODO Implement last call through sessions
     #TODO Program reversals
+    #TODO Send commands to running program
     
     symbol = "GME"
     last_call = "BUY"
