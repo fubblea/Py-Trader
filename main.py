@@ -25,7 +25,7 @@ if __name__ == '__main__':
     t = supertrend.Bot(symbol)
     
     print(f"[{datetime.datetime.now()}]")
-    print(f"Bot started with focus on {symbol}")
+    print(f"Bot started with {args.bias}ing bias on {symbol}")
     
     #Main Loop
     while True:
@@ -39,16 +39,14 @@ if __name__ == '__main__':
         
         elif current_call == "BUY":
             last_call = current_call
-            t.submit_order("BUY", target, strat[1])
+            t.submit_order("BUY", target)
             
             print(f"[{datetime.datetime.now()}]")
             print(f"New Call: Bought {target} shares of {symbol}")
-            print(f"Set stop at {strat[1]}")
         
         elif current_call == "SELL":
             last_call = current_call
-            t.submit_order("SELL", target, strat[1])
+            t.submit_order("SELL", target)
             
             print(f"[{datetime.datetime.now()}]")
             print(f"New Call: Sold {target} shares of {symbol}")
-            print(f"Set stop at {strat[1]}")

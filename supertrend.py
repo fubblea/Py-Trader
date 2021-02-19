@@ -16,25 +16,21 @@ class Bot(object):
         self.symbol = symbol
         self.current_order = None
         
-    def submit_order(self, side, target, stop_price):
+    def submit_order(self, side, target):
             
         if side == "BUY":
             self.current_order = self.api.submit_order(symbol=self.symbol, 
                                                        qty=target, 
                                                        side='buy',
-                                                       time_in_force='gtc',
-                                                       type='market',
-                                                       order_class='oto',
-                                                       stop_loss=dict(stop_price=stop_price))
+                                                       time_in_force='fok',
+                                                       type='market')
             
         elif side == "SELL":
             self.current_order = self.api.submit_order(symbol=self.symbol, 
                                                        qty=target, 
                                                        side='sell',
-                                                       time_in_force='gtc',
-                                                       type='market',
-                                                       order_class='oto',
-                                                       stop_loss=dict(stop_price=stop_price))
+                                                       time_in_force='fok',
+                                                       type='market')
             
     def analysis(self, symbol):    
         data =yf.download(symbol, period="5h",interval="30m")
@@ -129,5 +125,4 @@ class Bot(object):
         data = self.analysis(symbol)
         
         trigger = data.iloc[-1, -1]
-        stop_price = data["ST"].iloc[-1]
-        return [trigger, stop_price]
+        return [trigger]
