@@ -1,10 +1,14 @@
-import numpy as np
-import yfinance as yf
-import pandas_datareader as pdr
-import pandas as pd
-import alpaca_trade_api as alpaca
+import datetime
 import os
+
+import alpaca_trade_api as alpaca
 import dotenv
+import numpy as np
+import pandas as pd
+import pandas_datareader as pdr
+import yfinance as yf
+
+
 class Bot(object):    
     def __init__ (self, symbol):
         dotenv.load_dotenv()
@@ -16,8 +20,11 @@ class Bot(object):
         self.symbol = symbol
         self.current_order = None
         
+    def get_positions(self):
+        print("Open Positions:")
+        print(self.api.list_positions())
+    
     def submit_order(self, side, target):
-            
         if side == "BUY":
             self.current_order = self.api.submit_order(symbol=self.symbol, 
                                                        qty=target, 
@@ -25,12 +32,17 @@ class Bot(object):
                                                        time_in_force='fok',
                                                        type='market')
             
+            print(f"[{datetime.datetime.now()}]")
+            print(f"Bought {target} shares in {self.symbol}")
+            
         elif side == "SELL":
             self.current_order = self.api.submit_order(symbol=self.symbol, 
                                                        qty=target, 
                                                        side='sell',
                                                        time_in_force='fok',
                                                        type='market')
+            print(f"[{datetime.datetime.now()}]")
+            print(f"Sold {target} shares in {self.symbol}")
             
     def analysis(self, symbol):    
         data =yf.download(symbol, period="5h",interval="30m")

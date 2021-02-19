@@ -1,7 +1,7 @@
 import supertrend
-import datetime
 import print_supress
 import argparse
+import datetime
 
 if __name__ == '__main__':
     #TODO Implement last call through sessions
@@ -40,13 +40,9 @@ if __name__ == '__main__':
         elif current_call == "BUY":
             last_call = current_call
             t.submit_order("BUY", target)
-            
-            print(f"[{datetime.datetime.now()}]")
-            print(f"New Call: Bought {target} shares of {symbol}")
+            t.get_positions()
         
         elif current_call == "SELL":
             last_call = current_call
             t.submit_order("SELL", target)
-            
-            print(f"[{datetime.datetime.now()}]")
-            print(f"New Call: Sold {target} shares of {symbol}")
+            t.get_positions()
