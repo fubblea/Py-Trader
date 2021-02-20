@@ -1,7 +1,8 @@
-import supertrend
-import print_supress
 import argparse
 import datetime
+
+import print_supress
+import supertrend
 
 if __name__ == '__main__':
     #TODO Implement last call through sessions

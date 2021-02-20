@@ -1,7 +1,6 @@
-import e_atr
 import datetime
-import time
 import os
+import time
 
 import alpaca_trade_api as alpaca
 import dotenv
@@ -9,6 +8,8 @@ import numpy as np
 import pandas as pd
 import pandas_datareader as pdr
 import yfinance as yf
+
+import e_atr
 
 
 class Bot(object):    
@@ -21,7 +22,7 @@ class Bot(object):
         self.api = alpaca.REST(self.key, self.secret, self.alpaca_endpoint)
         self.symbol = symbol
         self.current_order = None
-        
+     
     def get_positions(self):
         print("Open Positions:")
         time.sleep(1)
