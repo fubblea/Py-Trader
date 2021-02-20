@@ -49,7 +49,7 @@ class Bot(object):
             print(f"Sold {target} shares in {self.symbol}")
             
     def analysis(self, symbol):    
-        data =yf.download('MSFT', period="1d",interval="15m")
+        data =yf.download(symbol, period="1d",interval="15m")
         data=data.reset_index(drop=True)
         
         multiplier = 3

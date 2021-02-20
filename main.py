@@ -4,11 +4,7 @@ import datetime
 import print_supress
 import supertrend
 
-if __name__ == '__main__':
-    #TODO Implement last call through sessions
-    #TODO Program reversals
-    #TODO Send commands to running program
-    
+if __name__ == '__main__':    
     parser = argparse.ArgumentParser()
     parser.add_argument("symbol", help="The symbol you want the bot to focus on")
     parser.add_argument("bias", help="Buying or selling bias")
@@ -30,6 +26,9 @@ if __name__ == '__main__':
     
     #Main Loop
     while True:
+        
+        #TODO Check if market will close and then auto-close positions
+        
         with print_supress.suppress_stdout_stderr():
             strat = t.strat(symbol)
         
