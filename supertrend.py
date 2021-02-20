@@ -1,3 +1,4 @@
+import e_atr
 import datetime
 import time
 import os
@@ -47,29 +48,25 @@ class Bot(object):
             print(f"Sold {target} shares in {self.symbol}")
             
     def analysis(self, symbol):    
-        data =yf.download(symbol, period="30m",interval="5m")
+        data =yf.download('MSFT', period="1d",interval="15m")
         data=data.reset_index(drop=True)
+        
+        multiplier = 3
+        period = 10
 
-        data['tr0'] = abs(data["High"] - data["Low"])
-        data['tr1'] = abs(data["High"] - data["Close"].shift(1))
-        data['tr2'] = abs(data["Low"]- data["Close"].shift(1))
-        data["TR"] = round(data[['tr0', 'tr1', 'tr2']].max(axis=1),2)
         data["ATR"]=0.00
+        data['SMA']=0.00
+        data['EMA']=0.00
         data['BUB']=0.00
         data["BLB"]=0.00
         data["FUB"]=0.00
         data["FLB"]=0.00
         data["ST"]=0.00
 
-        # Calculating ATR 
-        for i, row in data.iterrows():
-            if i == 0:
-                data.loc[i,'ATR'] = 0.00 #data['ATR'].iat[0]
-            else:
-                data.loc[i,'ATR'] = ((data.loc[i-1,'ATR'] * 9)+data.loc[i,'TR'])/10
-
-        data['BUB'] = round(((data["High"] + data["Low"]) / 2) + (3 * data["ATR"]),2)
-        data['BLB'] = round(((data["High"] + data["Low"]) / 2) - (3 * data["ATR"]),2)
+        e_atr.eATR(data, period)
+        
+        data['BUB'] = round(((data["High"] + data["Low"]) / 2) + (multiplier * data["EMA"]),2)
+        data['BLB'] = round(((data["High"] + data["Low"]) / 2) - (multiplier * data["EMA"]),2)
 
 
         # FINAL UPPERBAND = IF( (Current BASICUPPERBAND < Previous FINAL UPPERBAND) or (Previous Close > Previous FINAL UPPERBAND))
