@@ -3,7 +3,7 @@ import datetime
 
 import print_supress
 import supertrend
-import grapher
+import graph
 import pandas as pd
 
 if __name__ == '__main__':    
@@ -26,14 +26,12 @@ if __name__ == '__main__':
     print(f"[{datetime.datetime.now()}]")
     print(f"Bot started with {args.bias}ing bias on {symbol}")
     
-    with print_supress.suppress_stdout_stderr():
-            strat = t.strat(symbol)
-    
-    grapher.plot_graph(strat[1], symbol)
-    
     #Main Loop
     while t.time_to_market_close() > 2:
            
+        with print_supress.suppress_stdout_stderr():
+            strat = t.strat(symbol)
+            
         current_call = strat[0]
         
         if current_call == last_call:
@@ -50,6 +48,7 @@ if __name__ == '__main__':
             t.get_positions()
         
         #TODO Fix updating
-        grapher.update_graph(strat[1], symbol)
+        graph.plot(strat[1], symbol)
             
     t.close_all()
+    print("Market Closed")
