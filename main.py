@@ -25,7 +25,7 @@ if __name__ == '__main__':
     print(f"Bot started with {args.bias}ing bias on {symbol}")
     
     #Main Loop
-    while t.trade_window():
+    while t.time_to_market_close() > 2:
         
         with print_supress.suppress_stdout_stderr():
             strat = t.strat(symbol)

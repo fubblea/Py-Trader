@@ -23,15 +23,14 @@ class Bot(object):
         self.symbol = symbol
         self.current_order = None
      
+    def time_to_market_close(self):
+        clock = self.api.get_clock()
+        closing = clock.next_close - clock.timestamp
+        return round(closing.total_seconds() / 60)
+    
     def close_all(self):
         self.api.close_all_positions()
         print("Market Closed. Closed all open positions")
-    
-    def trade_window(self):
-        if self.api.get_clock() > 120:
-            return True
-        else:
-            return False
     
     def get_positions(self):
         print("Open Positions:")
