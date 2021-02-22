@@ -58,8 +58,8 @@ class Bot(object):
             print(f"Sold {target} shares in {self.symbol}")
             
     def analysis(self, symbol):    
-        data =yf.download(symbol, period="1d",interval="15m")
-        data=data.reset_index(drop=True)
+        data =yf.download(symbol, period="1d",interval="1m")
+        data=data.reset_index()
         
         multiplier = 3
         period = 10
@@ -146,4 +146,4 @@ class Bot(object):
         data = self.analysis(symbol)
         
         trigger = data.iloc[-1, -1]
-        return [trigger]
+        return [trigger, data]
