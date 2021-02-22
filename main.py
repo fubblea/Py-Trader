@@ -25,9 +25,7 @@ if __name__ == '__main__':
     print(f"Bot started with {args.bias}ing bias on {symbol}")
     
     #Main Loop
-    while True:
-        
-        #TODO Check if market will close and then auto-close positions
+    while t.trade_window():
         
         with print_supress.suppress_stdout_stderr():
             strat = t.strat(symbol)
@@ -46,3 +44,5 @@ if __name__ == '__main__':
             last_call = current_call
             t.submit_order("SELL", target)
             t.get_positions()
+            
+    t.close_all()
