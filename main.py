@@ -43,6 +43,8 @@ if __name__ == '__main__':
             
         current_call = strat[0]
         
+        current_call = strat[0]
+        
         if current_call == last_call:
             pass
         
