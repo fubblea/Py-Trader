@@ -38,7 +38,7 @@ if __name__ == '__main__':
     
     #Main Loop
     #TODO Fix time to market close
-    while t.time_to_market_close() > 2:
+    while t.trading_window():
            
         with print_supress.suppress_stdout_stderr():
             strat = t.strat(symbol)
