@@ -27,12 +27,14 @@ if __name__ == '__main__':
     print(f"[{datetime.datetime.now()}]")
     print(f"Bot started with {args.bias}ing bias on {symbol}")
     
+    """
     with print_supress.suppress_stdout_stderr():
             strat = t.strat(symbol)
     
     fig, ax = graph.plot(strat[1], symbol)
     fig.show()
     fig.canvas.draw()
+    """
     
     #Main Loop
     #TODO Fix time to market close
@@ -58,10 +60,12 @@ if __name__ == '__main__':
             t.submit_order("SELL", target)
             t.get_positions()
         
+        """
         #TODO Fix updating
         print("Update")
         fig, ax = graph.plot(strat[1], symbol)
         fig.canvas.draw()
+        """
             
     t.close_all()
     print("Market Closed")
