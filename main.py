@@ -2,6 +2,7 @@ import argparse
 import datetime
 
 import print_supress
+import mplfinance as mpf
 import supertrend
 import graph
 import pandas as pd
@@ -26,7 +27,15 @@ if __name__ == '__main__':
     print(f"[{datetime.datetime.now()}]")
     print(f"Bot started with {args.bias}ing bias on {symbol}")
     
+    with print_supress.suppress_stdout_stderr():
+            strat = t.strat(symbol)
+    
+    fig, ax = graph.plot(strat[1], symbol)
+    fig.show()
+    fig.canvas.draw()
+    
     #Main Loop
+    #TODO Fix time to market close
     while t.time_to_market_close() > 2:
            
         with print_supress.suppress_stdout_stderr():
@@ -48,7 +57,11 @@ if __name__ == '__main__':
             t.get_positions()
         
         #TODO Fix updating
-        graph.plot(strat[1], symbol)
+        print("Update")
+        fig, ax = graph.plot(strat[1], symbol)
+        fig.close()
+        fig.canvas.draw()
+        fig.show()
             
     t.close_all()
     print("Market Closed")
