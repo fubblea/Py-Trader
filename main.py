@@ -28,6 +28,8 @@ if __name__ == '__main__':
     print(f"Bot started with {args.bias}ing bias on {symbol}")
     
     #Main Loop
+    #TODO Fix stop loss function
+    #TODO Not covering position
     while t.trading_window():
            
         with print_supress.suppress_stdout_stderr():
@@ -51,4 +53,3 @@ if __name__ == '__main__':
             t.get_positions()
             
     t.close_all()
-    print("Market Closed")
