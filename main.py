@@ -1,5 +1,3 @@
-#Matty the trading bot
-
 import argparse
 import datetime
 
@@ -8,6 +6,8 @@ import mplfinance as mpf
 import supertrend
 import graph
 import pandas as pd
+
+#Matty the trading bot
 
 if __name__ == '__main__':    
     parser = argparse.ArgumentParser()
@@ -32,6 +32,7 @@ if __name__ == '__main__':
     #Main Loop
     #TODO Fix stop loss function
     #TODO Not covering position
+    #TODO Fix supertrend period
     while t.trading_window():
            
         with print_supress.suppress_stdout_stderr():
