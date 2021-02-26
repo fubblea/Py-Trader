@@ -1,3 +1,5 @@
+#Matty the trading bot
+
 import argparse
 import datetime
 
