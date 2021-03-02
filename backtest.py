@@ -2,6 +2,7 @@ import argparse
 
 import supertrend
 import graph
+import trend
 
 parser = argparse.ArgumentParser()
 parser.add_argument("symbol", help="The symbol you want the bot to focus on")
@@ -12,6 +13,6 @@ t = supertrend.Bot(symbol)
 
 data = t.analysis(symbol)
 
-print(data['ST_BUY_SELL'])
+print(f"{trend.find_bias(symbol)}ing bias")
 
 graph.plot(data, symbol)

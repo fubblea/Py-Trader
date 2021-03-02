@@ -26,6 +26,7 @@ def ema(Data, alpha, window):
                 pass
     return Data
 
+
 def eATR(Data, atr_lookback):
  
  # TR
@@ -39,5 +40,21 @@ def eATR(Data, atr_lookback):
   except KeyError:
    pass
  Data.loc[0, 'ATR'] = 0 
- Data = ema(Data, 2, atr_lookback)
+ Data = ema(Data, 3, atr_lookback)
+ return Data
+
+
+def ATR(Data, atr_lookback):
+ 
+ # TR
+ for i in range(len(Data)):
+  try:
+ 
+   Data.loc[i, 'ATR'] = max(Data.loc[i, 'High'] - Data.loc[i, 'Low'],
+   abs(Data.loc[i, 'High'] - Data.loc[i - 1, 'Close']),
+   abs(Data.loc[i, 'Low'] - Data.loc[i - 1, 'Close']))
+ 
+  except KeyError:
+   pass
+ Data.loc[0, 'ATR'] = 0 
  return Data
