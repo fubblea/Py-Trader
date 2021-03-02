@@ -33,5 +33,3 @@ def find_bias(symbol):
     
     else:
         return 'neutral'
-
-print(find_bias('GM'))

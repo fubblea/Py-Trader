@@ -28,7 +28,7 @@ if __name__ == '__main__':
     t = supertrend.Bot(symbol)
     
     print(f"[{datetime.datetime.now()}]")
-    print(f"Bot started with {args.bias}ing bias on {symbol}")
+    print(f"Bot started with {bias}ing bias on {symbol}")
     
     #Main Loop
     #TODO Fix stop loss function
