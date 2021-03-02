@@ -10,6 +10,7 @@ import pandas_datareader as pdr
 import yfinance as yf
 
 import indicators
+import print_supress
 
 
 class Bot(object):    
@@ -65,8 +66,9 @@ class Bot(object):
             print(f"Sold {target} shares in {self.symbol}")
             
     def analysis(self, symbol):    
-        data =yf.download(symbol, period="2d",interval="5m")
-        data=data.reset_index()
+        with print_supress.suppress_stdout_stderr():
+            data =yf.download(symbol, period="1d",interval="5m")
+            data=data.reset_index()
         
         multiplier = 2
         period = 5
