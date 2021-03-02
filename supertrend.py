@@ -67,11 +67,11 @@ class Bot(object):
             
     def analysis(self, symbol):    
         with print_supress.suppress_stdout_stderr():
-            data =yf.download(symbol, period="1d",interval="5m")
+            data =yf.download(symbol, period="2d",interval="15m")
             data=data.reset_index()
         
-        multiplier = 2
-        period = 5
+        multiplier = 3
+        period = 10
 
         data["ATR"]=0.00
         data['SMA']=0.00

@@ -14,5 +14,6 @@ t = supertrend.Bot(symbol)
 data = t.analysis(symbol)
 
 print(f"{trend.find_bias(symbol)} bias")
+print(t.get_positions())
 
 graph.plot(data, symbol)
