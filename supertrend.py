@@ -9,7 +9,7 @@ import pandas as pd
 import pandas_datareader as pdr
 import yfinance as yf
 
-import e_atr
+import indicators
 
 
 class Bot(object):    
@@ -65,11 +65,11 @@ class Bot(object):
             print(f"Sold {target} shares in {self.symbol}")
             
     def analysis(self, symbol):    
-        data =yf.download(symbol, period="1d",interval="5m")
+        data =yf.download(symbol, period="2d",interval="5m")
         data=data.reset_index()
         
         multiplier = 2
-        period = 10
+        period = 5
 
         data["ATR"]=0.00
         data['SMA']=0.00
@@ -80,7 +80,7 @@ class Bot(object):
         data["FLB"]=0.00
         data["ST"]=0.00
 
-        e_atr.eATR(data, period)
+        indicators.eATR(data, period)
         
         data['BUB'] = round(((data["High"] + data["Low"]) / 2) + (multiplier * data["EMA"]),2)
         data['BLB'] = round(((data["High"] + data["Low"]) / 2) - (multiplier * data["EMA"]),2)
