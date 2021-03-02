@@ -65,10 +65,10 @@ class Bot(object):
             print(f"Sold {target} shares in {self.symbol}")
             
     def analysis(self, symbol):    
-        data =yf.download(symbol, period="2d",interval="15m")
+        data =yf.download(symbol, period="1d",interval="5m")
         data=data.reset_index()
         
-        multiplier = 3
+        multiplier = 2
         period = 10
 
         data["ATR"]=0.00
