@@ -35,9 +35,6 @@ if __name__ == '__main__':
         print("Waiting for trading window to open")
     
     #Main Loop
-    #TODO Fix stop loss function
-    #TODO Not covering position
-    #TODO Fix supertrend period
     while True:
         if t.trading_window():
             strat = t.strat()
