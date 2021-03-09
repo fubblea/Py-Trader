@@ -11,9 +11,14 @@ args = parser.parse_args()
 symbol = args.symbol
 t = supertrend.Bot(symbol)
 
-data = t.analysis(symbol)
+if t.trading_window():
+    data = t.analysis()
 
-print(f"{trend.find_bias(symbol)} bias")
-print(t.get_positions())
+    print(f"{trend.find_bias(symbol)} bias")
+    print(t.print_positions())
 
-graph.plot(data, symbol)
+    graph.plot(data, symbol)
+
+else:
+    print("Waiting for trading window to open")
+    print(t.print_positions())
