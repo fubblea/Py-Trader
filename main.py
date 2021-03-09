@@ -30,28 +30,37 @@ if __name__ == '__main__':
     print(f"[{datetime.datetime.now()}]")
     print(f"Bot started with {bias} bias on {symbol}")
     
+    if not (t.trading_window()):
+        print("Waiting for trading window to open")
+    
     #Main Loop
     #TODO Fix stop loss function
     #TODO Not covering position
     #TODO Fix supertrend period
-    while t.trading_window():
-        strat = t.strat(symbol)
+    while True:
+        if t.trading_window():
+            strat = t.strat()
+                
+            current_call = strat[0]
             
-        current_call = strat[0]
-        
-        current_call = strat[0]
-        
-        if current_call == last_call:
-            pass
-        
-        elif current_call == "BUY":
-            last_call = current_call
-            t.submit_order("BUY", target)
-            t.get_positions()
-        
-        elif current_call == "SELL":
-            last_call = current_call
-            t.submit_order("SELL", target)
-            t.get_positions()
+            current_call = strat[0]
             
-    t.close_all()
+            if len(t.get_positions()) == 0:                
+                if last_call == current_call:
+                    pass
+                
+                elif current_call == "BUY":
+                    last_call = current_call
+                    t.submit_order("BUY", target)
+                    t.print_positions()
+                
+                else:
+                    last_call = current_call
+                    t.submit_order("SELL", target)
+                    t.print_positions()
+            else:
+                if current_call != last_call:
+                    t.close_all()
+        
+        else:
+            t.close_all()

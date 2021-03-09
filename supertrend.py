@@ -14,7 +14,7 @@ import print_supress
 
 
 class Bot(object):    
-    def __init__ (self, symbol):
+    def __init__ (self, symbol, period='1d', interval='15m', lookback=10, multiplier=3):
         dotenv.load_dotenv()
         
         self.key = os.getenv("API_KEY")
@@ -22,6 +22,10 @@ class Bot(object):
         self.alpaca_endpoint = os.getenv("ENDPOINT")
         self.api = alpaca.REST(self.key, self.secret, self.alpaca_endpoint)
         self.symbol = symbol
+        self.period = period
+        self.lookback = lookback
+        self.multiplier = multiplier
+        self.interval = interval
         self.current_order = None
      
     def trading_window(self):
@@ -29,21 +33,36 @@ class Bot(object):
         closing = clock.next_close - clock.timestamp
         closing = round(closing.total_seconds() / 60)
         
-        if closing > 2 and clock.is_open:
+        if (closing > 2) and self.algo_ready():
             return True
         else:
             return False
         
+    def algo_ready(self):
+        time_needed = int(self.interval[:-1]) * self.lookback
+        
+        clock = self.api.get_clock()
+        clock = clock.timestamp
+        current_time = round(clock.second / 60)
+        
+        if current_time > time_needed:
+            return True
+        else:
+            return False      
         
     
     def close_all(self):
-        self.api.close_all_positions()
-        print("Market Closed. Closed all open positions")
+        if len(self.api.list_positions()) > 0:
+            self.api.close_all_positions()
+            print("Closed all open positions")
     
     def get_positions(self):
+        return self.api.list_positions()
+        
+    def print_positions(self):
         print("Open Positions:")
         time.sleep(1)
-        print(self.api.list_positions())
+        print(self.get_positions())
     
     def submit_order(self, side, target):
         if side == "BUY":
@@ -65,13 +84,13 @@ class Bot(object):
             print(f"[{datetime.datetime.now()}]")
             print(f"Sold {target} shares in {self.symbol}")
             
-    def analysis(self, symbol):    
+    def analysis(self):    
         with print_supress.suppress_stdout_stderr():
-            data =yf.download(symbol, period="2d",interval="15m")
+            data =yf.download(self.symbol, period=self.period,interval=self.interval)
             data=data.reset_index()
         
-        multiplier = 3
-        period = 10
+        multiplier = self.multiplier
+        period = self.lookback
 
         data["ATR"]=0.00
         data['SMA']=0.00
@@ -151,8 +170,8 @@ class Bot(object):
         
         return data
 
-    def strat(self, symbol):
-        data = self.analysis(symbol)
+    def strat(self):
+        data = self.analysis()
         
         trigger = data.iloc[-1, -1]
         return [trigger, data]

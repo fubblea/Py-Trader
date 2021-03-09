@@ -25,10 +25,10 @@ def find_bias(symbol):
     adx_neg = adx_neg.iloc[-1]
     
     
-    if (adx_pos > adx_neg) and (adx >= 15):
+    if (adx_pos > adx_neg) and (adx >= 17):
         return 'buy'
     
-    elif (adx_pos < adx_neg) and (adx >= 15):
+    elif (adx_pos < adx_neg) and (adx >= 17):
         return 'sell'
     
     else:
