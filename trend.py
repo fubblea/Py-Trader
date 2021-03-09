@@ -10,7 +10,7 @@ def find_bias(symbol):
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     
     with print_supress.suppress_stdout_stderr():
-        data =yf.download(symbol, period="5d",interval="15m")
+        data =yf.download(symbol, period="5d",interval="60m")
         data=data.reset_index()
     
     bias = ta.trend.ADXIndicator(data['High'], data['Low'], data["Close"])\
