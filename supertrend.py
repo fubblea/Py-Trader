@@ -42,10 +42,10 @@ class Bot(object):
         time_needed = int(self.interval[:-1]) * self.lookback
         
         clock = self.api.get_clock()
-        clock = clock.timestamp
-        current_time = round(clock.second / 60)
+        delta = clock.next_close - clock.timestamp
+        delta = round(delta.total_seconds() / 60)
         
-        if current_time > time_needed:
+        if delta < (390 - time_needed):
             return True
         else:
             return False      

@@ -1,6 +1,7 @@
 import argparse
 import datetime
 import sys
+import time
 
 import supertrend
 import trend
@@ -64,3 +65,4 @@ if __name__ == '__main__':
         
         else:
             t.close_all()
+            time.sleep(0.5)
