@@ -14,7 +14,7 @@ import print_supress
 
 
 class Bot(object):    
-    def __init__ (self, symbol, period='1d', interval='15m', lookback=10, multiplier=3):
+    def __init__ (self, symbol, period='2d', interval='15m', lookback=10, multiplier=3):
         dotenv.load_dotenv()
         
         self.key = os.getenv("API_KEY")
