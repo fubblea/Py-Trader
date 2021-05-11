@@ -4,8 +4,18 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+mplfinance = "*"
+matplotlib = "*"
+yfinance = "*"
+python-dotenv = "*"
+alpaca-trade-api = "*"
+pandas-datareader = "*"
+ta = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.9"
+
+[pipenv]
+allow_prereleases = true
