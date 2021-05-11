@@ -6,11 +6,5 @@
 
 ## Dependancies
 
-```python
-alpaca_trade_api
-dotenv
-numpy
-pandas
-pandas_datareader
-yfinance
-```
+1. Clone repo
+2. Run `pipenv install`
