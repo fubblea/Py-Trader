@@ -4,7 +4,7 @@
 
 `python main.py [symbol] [bias] [shares]`
 
-## Dependancies
+## Installation
 
 1. Clone repo
 2. Run `pipenv install`
