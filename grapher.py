@@ -17,4 +17,6 @@ class Grapher():
     def update(self, bot):
         data = bot.analysis()
         if data.iloc[-1, 0] != self.df.iloc[-1, 0]:
-            return
+            print("Updating graph")
+            self.df = data
+            self.plot()
