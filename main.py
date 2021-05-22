@@ -5,6 +5,7 @@ import time
 
 import supertrend
 import trend
+import grapher
 
 #Matty the trading bot
 
@@ -27,6 +28,8 @@ if __name__ == '__main__':
     
     target = args.target
     t = supertrend.Bot(symbol)
+    data = t.analysis()
+    grapher = grapher.Grapher(data, symbol)
     
     print(f"[{datetime.datetime.now()}]")
     print(f"Bot started with {bias} bias on {symbol}")
@@ -34,13 +37,12 @@ if __name__ == '__main__':
     if not (t.trading_window()):
         print("Waiting for trading window to open")
     
+    grapher.plot(data, symbol)
+    
     #Main Loop
     while True:
         if t.trading_window():
             strat = t.strat()
-                
-            current_call = strat[0]
-            
             current_call = strat[0]
             
             if len(t.get_positions()) == 0:                
@@ -59,6 +61,8 @@ if __name__ == '__main__':
             else:
                 if current_call != last_call:
                     t.close_all()
+            
+            grapher.update(t)
         
         else:
             t.close_all()
