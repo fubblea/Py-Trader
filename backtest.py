@@ -1,18 +1,17 @@
-import argparse
+import backtrader as bt
+import datetime
 
-import supertrend
-import graph
-import trend
-
-parser = argparse.ArgumentParser()
-parser.add_argument("symbol", help="The symbol you want the bot to focus on")
-args = parser.parse_args()
-
-symbol = args.symbol
-t = supertrend.Bot(symbol)
-
-data = t.analysis(symbol)
-
-print(f"{trend.find_bias(symbol)} bias")
-
-graph.plot(data, symbol)
+cerebro = bt.Cerebro()
+cerebro.broker.setcash(10000.0)
+    
+data = bt.feeds.YahooFinanceData(dataname='AAPL',
+                                  fromdate=datetime.date(2017, 1, 1),
+                                  todate=datetime.date(2017, 12, 31))
+    
+print(data)
+    
+cerebro.adddata(data)
+print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
+cerebro.run()
+print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
+cerebro.plot()

@@ -5,13 +5,13 @@ name = "pypi"
 
 [packages]
 mplfinance = "*"
-matplotlib = "*"
 yfinance = "*"
 python-dotenv = "*"
 alpaca-trade-api = "*"
 pandas-datareader = "*"
 ta = "*"
 backtrader = {extras = ["plotting"], version = "*"}
+matplotlib = "==3.2.2"
 
 [dev-packages]
 
