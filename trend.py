@@ -6,12 +6,15 @@ import yfinance as yf
 import print_supress
 
 
-def find_bias(symbol):
+def find_bias(symbol, backtest=False, backtest_data=[]):
     warnings.filterwarnings("ignore", category=RuntimeWarning)
     
-    with print_supress.suppress_stdout_stderr():
-        data =yf.download(symbol, period="5d",interval="60m")
-        data=data.reset_index()
+    if backtest == True:
+        data = backtest_data
+    else:
+        with print_supress.suppress_stdout_stderr():
+            data =yf.download(symbol, period="5d",interval="60m")
+            data=data.reset_index()
     
     bias = ta.trend.ADXIndicator(data['High'], data['Low'], data["Close"])\
 
