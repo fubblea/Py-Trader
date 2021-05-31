@@ -1,9 +1,6 @@
 import datetime
-import os
 import time
 
-import alpaca_trade_api as alpaca
-import dotenv
 import numpy as np
 import pandas as pd
 import pandas_datareader as pdr
@@ -11,10 +8,11 @@ import yfinance as yf
 
 import indicators
 import print_supress
+import trend
 
 
 class Bot(object):    
-    def __init__ (self, symbol, period='2d', interval='15m', lookback=10, multiplier=3):
+    def __init__ (self, symbol, api, target=10, period='2d', interval='15m', lookback=10, multiplier=3, bias_bypass=False):
         """Bot running on the supertrend algorithm
 
         Args:
@@ -24,41 +22,15 @@ class Bot(object):
             lookback (int, optional): Lookback. Defaults to 10.
             multiplier (int, optional): Multiplier. Defaults to 3.
         """
-        dotenv.load_dotenv()
-        
-        self.key = os.getenv("API_KEY")
-        self.secret = os.getenv("SECRET_KEY")
-        self.alpaca_endpoint = os.getenv("ENDPOINT")
-        self.api = alpaca.REST(self.key, self.secret, self.alpaca_endpoint)
+        self.api = api
         self.symbol = symbol
         self.period = period
         self.lookback = lookback
         self.multiplier = multiplier
         self.interval = interval
         self.current_order = None
-     
-    def trading_window(self):
-        clock = self.api.get_clock()
-        closing = clock.next_close - clock.timestamp
-        closing = round(closing.total_seconds() / 60)
-        
-        if (closing > 2) and self.algo_ready():
-            return True
-        else:
-            return False
-        
-    def algo_ready(self):
-        time_needed = int(self.interval[:-1]) * self.lookback
-        
-        clock = self.api.get_clock()
-        delta = clock.next_close - clock.timestamp
-        delta = round(delta.total_seconds() / 60)
-        
-        if delta < (390 - time_needed):
-            return True
-        else:
-            return False      
-        
+        self.target = target
+        self.bias_bypass = bias_bypass
     
     def close_all(self):
         if len(self.api.list_positions()) > 0:
@@ -180,7 +152,37 @@ class Bot(object):
         return data
 
     def strat(self):
+        bias = trend.find_bias(self.symbol)
         data = self.analysis()
         
         trigger = data.iloc[-1, -1]
-        return [trigger, data]
+        
+        if self.bias_bypass:
+            return ['BUY', data]
+        
+        if bias == trigger:
+            return [trigger, data]
+        else:
+            return ['HOLD', data]
+
+    def evaluate(self):
+        strat = self.strat()
+        position = self.get_positions()
+            
+        if len(position) == 0:                
+            if strat[0] == 'HOLD':
+                pass
+                
+            elif strat[0] == "BUY":
+                self.submit_order("BUY", self.target)
+                self.print_positions()
+                
+            else:
+                self.submit_order("SELL", self.target)
+                self.print_positions()
+        else:
+            if position[0].side == 'long' and strat[0] == 'sell':
+                self.close_all()
+                
+            elif position[0].side == 'short' and strat[0] == 'buy':
+                self.close_all()
