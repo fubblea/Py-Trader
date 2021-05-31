@@ -8,6 +8,7 @@ import yfinance as yf
 
 import indicators
 import print_supress
+import trend
 
 
 class Bot(object):    
@@ -27,30 +28,7 @@ class Bot(object):
         self.lookback = lookback
         self.multiplier = multiplier
         self.interval = interval
-        self.current_order = None
-     
-    def trading_window(self):
-        clock = self.api.get_clock()
-        closing = clock.next_close - clock.timestamp
-        closing = round(closing.total_seconds() / 60)
-        
-        if (closing > 2) and self.algo_ready():
-            return True
-        else:
-            return False
-        
-    def algo_ready(self):
-        time_needed = int(self.interval[:-1]) * self.lookback
-        
-        clock = self.api.get_clock()
-        delta = clock.next_close - clock.timestamp
-        delta = round(delta.total_seconds() / 60)
-        
-        if delta < (390 - time_needed):
-            return True
-        else:
-            return False      
-        
+        self.current_order = None        
     
     def close_all(self):
         if len(self.api.list_positions()) > 0:
@@ -172,7 +150,34 @@ class Bot(object):
         return data
 
     def strat(self):
+        bias = trend.find_bias(self.symbol)
         data = self.analysis()
         
         trigger = data.iloc[-1, -1]
-        return [trigger, data]
+        
+        if bias == trigger:
+            return [trigger, data]
+        else:
+            return ['HOLD', data]
+
+    def evaluate(self):
+        strat = self.strat()
+        position = self.get_positions()
+            
+        if len(position) == 0:                
+            if strat[0] == 'HOLD':
+                pass
+                
+            elif strat[0] == "BUY":
+                self.submit_order("BUY", target)
+                self.print_positions()
+                
+            else:
+                self.submit_order("SELL", target)
+                self.print_positions()
+        else:
+            if position[0]['side'] == 'long' and strat[0] == 'sell':
+                self.close_all()
+                
+            elif position[0]['side'] == 'short' and strat[0] == 'buy':
+                self.close_all()

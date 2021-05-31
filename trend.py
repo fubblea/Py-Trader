@@ -26,10 +26,10 @@ def find_bias(symbol):
     
     
     if (adx_pos > adx_neg) and (adx >= 17):
-        return 'buy'
+        return 'BUY'
     
     elif (adx_pos < adx_neg) and (adx >= 17):
-        return 'sell'
+        return 'SELL'
     
     else:
-        return 'neutral'
+        return 'NEUTRAL'
