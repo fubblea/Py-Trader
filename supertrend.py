@@ -1,9 +1,6 @@
 import datetime
-import os
 import time
 
-import alpaca_trade_api as alpaca
-import dotenv
 import numpy as np
 import pandas as pd
 import pandas_datareader as pdr
@@ -14,7 +11,7 @@ import print_supress
 
 
 class Bot(object):    
-    def __init__ (self, symbol, period='2d', interval='15m', lookback=10, multiplier=3):
+    def __init__ (self, symbol, api, period='2d', interval='15m', lookback=10, multiplier=3):
         """Bot running on the supertrend algorithm
 
         Args:
@@ -24,12 +21,7 @@ class Bot(object):
             lookback (int, optional): Lookback. Defaults to 10.
             multiplier (int, optional): Multiplier. Defaults to 3.
         """
-        dotenv.load_dotenv()
-        
-        self.key = os.getenv("API_KEY")
-        self.secret = os.getenv("SECRET_KEY")
-        self.alpaca_endpoint = os.getenv("ENDPOINT")
-        self.api = alpaca.REST(self.key, self.secret, self.alpaca_endpoint)
+        self.api = api
         self.symbol = symbol
         self.period = period
         self.lookback = lookback

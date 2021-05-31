@@ -1,11 +1,15 @@
 import argparse
 import datetime
+import os
 import sys
 import time
 
+import alpaca_trade_api as alpaca
+import dotenv
+
+import grapher
 import supertrend
 import trend
-import grapher
 
 #Matty the trading bot
 
@@ -19,7 +23,10 @@ if __name__ == '__main__':
     
     symbol = args.symbol
     
-    t = supertrend.Bot(symbol, period='1d', interval='1m')
+    dotenv.load_dotenv()
+    api = alpaca.REST(os.getenv("API_KEY"), os.getenv("SECRET_KEY"), os.getenv("ENDPOINT"))
+    
+    t = supertrend.Bot(symbol, api, period='1d', interval='1m')
     
     if args.b:
         last_call = t.strat()[0]
