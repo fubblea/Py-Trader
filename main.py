@@ -34,6 +34,7 @@ if __name__ == '__main__':
     dotenv.load_dotenv()
     api = alpaca.REST(os.getenv("API_KEY"), os.getenv("SECRET_KEY"), os.getenv("ENDPOINT"))
     
+    #TODO Fix watchlist not working
     watchlist = get_watchlist(api)
     
     #Watchlist Override
@@ -43,6 +44,9 @@ if __name__ == '__main__':
     if api.get_clock().is_open():
         for symbol in watchlist:
             active_bots.append(supertrend.Bot(symbol, api, target=args.target, bias_bypass=args.b))
+    else:
+        print("Market Closed")
+        sys.exit()
     
     #Main Loop
     while True:
