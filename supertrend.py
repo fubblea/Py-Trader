@@ -12,7 +12,7 @@ import trend
 
 
 class Bot(object):    
-    def __init__ (self, symbol, api, target=10, period='2d', interval='15m', lookback=10, multiplier=3):
+    def __init__ (self, symbol, api, target=10, period='2d', interval='15m', lookback=10, multiplier=3, bias_bypass=False):
         """Bot running on the supertrend algorithm
 
         Args:
@@ -29,7 +29,8 @@ class Bot(object):
         self.multiplier = multiplier
         self.interval = interval
         self.current_order = None
-        self.target = target    
+        self.target = target
+        self.bias_bypass = bias_bypass
     
     def close_all(self):
         if len(self.api.list_positions()) > 0:
@@ -156,6 +157,9 @@ class Bot(object):
         
         trigger = data.iloc[-1, -1]
         
+        if self.bias_bypass:
+            return ['BUY', data]
+        
         if bias == trigger:
             return [trigger, data]
         else:
@@ -177,8 +181,8 @@ class Bot(object):
                 self.submit_order("SELL", self.target)
                 self.print_positions()
         else:
-            if position[0]['side'] == 'long' and strat[0] == 'sell':
+            if position[0].side == 'long' and strat[0] == 'sell':
                 self.close_all()
                 
-            elif position[0]['side'] == 'short' and strat[0] == 'buy':
+            elif position[0].side == 'short' and strat[0] == 'buy':
                 self.close_all()
