@@ -12,7 +12,7 @@ import trend
 
 
 class Bot(object):    
-    def __init__ (self, symbol, api, period='2d', interval='15m', lookback=10, multiplier=3):
+    def __init__ (self, symbol, api, target=10, period='2d', interval='15m', lookback=10, multiplier=3):
         """Bot running on the supertrend algorithm
 
         Args:
@@ -28,7 +28,8 @@ class Bot(object):
         self.lookback = lookback
         self.multiplier = multiplier
         self.interval = interval
-        self.current_order = None        
+        self.current_order = None
+        self.target = target    
     
     def close_all(self):
         if len(self.api.list_positions()) > 0:
@@ -169,11 +170,11 @@ class Bot(object):
                 pass
                 
             elif strat[0] == "BUY":
-                self.submit_order("BUY", target)
+                self.submit_order("BUY", self.target)
                 self.print_positions()
                 
             else:
-                self.submit_order("SELL", target)
+                self.submit_order("SELL", self.target)
                 self.print_positions()
         else:
             if position[0]['side'] == 'long' and strat[0] == 'sell':

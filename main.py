@@ -1,7 +1,5 @@
 import argparse
-import datetime
 import os
-import sys
 import time
 
 import alpaca_trade_api as alpaca
@@ -11,6 +9,15 @@ import grapher
 import supertrend
 
 #Matty the trading bot
+
+def get_watchlist(api):
+    resp = api.get_watchlists()
+    symbols = []
+    
+    for item in resp['assets']:
+        symbols.append(item['symbol'])
+    
+    return symbols
 
 if __name__ == '__main__':    
     parser = argparse.ArgumentParser()
@@ -25,16 +32,9 @@ if __name__ == '__main__':
     dotenv.load_dotenv()
     api = alpaca.REST(os.getenv("API_KEY"), os.getenv("SECRET_KEY"), os.getenv("ENDPOINT"))
     
-    t = supertrend.Bot(symbol, api, period='1d', interval='1m')
+    watchlist = get_watchlist()
     
-    target = args.target
-    data = t.analysis()
-    grapher = grapher.Grapher(data, symbol)
-    
-    if not (t.trading_window() or args.w):
-        print("Waiting for trading window to open")
-    
-    grapher.plot()
+    t = supertrend.Bot(symbol, api, target=args.target)
     
     if args.w:
         print("Window bypassed")
