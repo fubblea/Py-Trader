@@ -1,12 +1,10 @@
 import argparse
 import os
-import time
 import sys
 
 import alpaca_trade_api as alpaca
 import dotenv
 
-import grapher
 import supertrend
 
 #Matty the trading bot

@@ -1,5 +1,8 @@
 #Test files
 test.py
+backtesting_data.csv
+tearsheet.html
+backtrader_plot.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

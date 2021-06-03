@@ -12,7 +12,7 @@ import trend
 
 
 class Bot(object):    
-    def __init__ (self, symbol, api, target=10, period='2d', interval='15m', lookback=10, multiplier=3, bias_bypass=False):
+    def __init__ (self, symbol, api, target=10, period='2d', interval='15m', lookback=10, multiplier=3, bias_bypass=False, backtest=False):
         """Bot running on the supertrend algorithm
 
         Args:
@@ -31,6 +31,7 @@ class Bot(object):
         self.current_order = None
         self.target = target
         self.bias_bypass = bias_bypass
+        self.backtest = backtest
     
     def close_all(self):
         if len(self.api.list_positions()) > 0:
@@ -65,10 +66,15 @@ class Bot(object):
             print(f"[{datetime.datetime.now()}]")
             print(f"Sold {target} shares in {self.symbol}")
             
-    def analysis(self):    
-        with print_supress.suppress_stdout_stderr():
-            data =yf.download(self.symbol, period=self.period,interval=self.interval)
+    def analysis(self):
+        
+        if self.backtest == True:
+            data = pd.read_csv('backtesting_data.csv')
             data=data.reset_index()
+        else:
+            with print_supress.suppress_stdout_stderr():
+                data =yf.download(self.symbol, period=self.period,interval=self.interval)
+                data=data.reset_index()
         
         multiplier = self.multiplier
         period = self.lookback
@@ -157,13 +163,16 @@ class Bot(object):
         
         trigger = data.iloc[-1, -1]
         
-        if self.bias_bypass:
+        if self.bias_bypass == True:
             return ['BUY', data]
         
-        if bias == trigger:
-            return [trigger, data]
+        if len(self.get_positions()) == 0:
+            if bias == trigger:
+                return [trigger, data]
+            else:
+                return ['HOLD', data]
         else:
-            return ['HOLD', data]
+            return [trigger, data]
 
     def evaluate(self):
         strat = self.strat()
