@@ -62,9 +62,10 @@ symbol = 'AAPL'
 
 cerebro = bt.Cerebro()
 cerebro.addstrategy(Supertrend)
+cerebro.addanalyzer(bt.analyzers.PyFolio, _name='PyFolio')
 cerebro.broker.setcash(10000.0)
 
-dataframe = yf.download(symbol, start='2020-01-01', end='2020-03-30', interval='1d')
+dataframe = yf.download(symbol, start='2020-01-01', end='2020-4-30', interval='1d')
 dataframe.to_csv('backtesting_data.csv', encoding='utf-8')
 
 data = bt.feeds.PandasData(dataname=dataframe)    
@@ -72,6 +73,13 @@ cerebro.adddata(data)
 print("Data Imported")
 
 print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
-cerebro.run()
+results = cerebro.run()
+strat = results[0]
 print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
-cerebro.plot(style='candlestick', barup='green', bardown='red', volume=False)
+cerebro.plot(style='candlestick', barup='green', bardown='red', volume=False, figfilename='backtrader_plot.png')
+
+portfolio_stats = strat.analyzers.getbyname('PyFolio')
+returns, positions, transactions, gross_lev = portfolio_stats.get_pf_items()
+returns.index = returns.index.tz_convert(None)
+
+qs.reports.html(returns, output='teardown.html', title='Backtest Results')
