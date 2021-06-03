@@ -157,22 +157,22 @@ class Bot(object):
         
         return data
 
-    def strat(self, backtest_index):
+    def strat(self):
         bias = trend.find_bias(self.symbol)
         data = self.analysis()
         
-        if self.backtest:
-            trigger = data.iloc[backtest_index]['ST_BUY_SELL']
-        else:
-            trigger = data.iloc[-1, -1]
+        trigger = data.iloc[-1, -1]
         
-        if self.bias_bypass:
+        if self.bias_bypass == True:
             return ['BUY', data]
         
-        if bias == trigger:
-            return [trigger, data]
+        if len(self.get_positions()) == 0:
+            if bias == trigger:
+                return [trigger, data]
+            else:
+                return ['HOLD', data]
         else:
-            return ['HOLD', data]
+            return [trigger, data]
 
     def evaluate(self):
         strat = self.strat()

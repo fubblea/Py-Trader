@@ -46,39 +46,39 @@ class Supertrend(bt.Strategy):
     
     def next(self):
         print(self.datetime.date(ago=0))
+        trigger = self.bot.analysis().iloc[self.i]['ST_BUY_SELL']
         
         if self.position.size == 0:                
-            if self.bot.strat(self.i)[0] == 'HOLD':
+            if trigger == 'HOLD':
                 pass
                 print("HOLD")
                 
-            elif self.bot.strat(self.i)[0] == "BUY":
+            elif trigger == "BUY":
                 amount_to_invest = (self.order_pct * self.broker.cash)
                 self.size = math.floor(amount_to_invest / self.data.close)
 
-                print("Buy {} shares of {} at {}".format(self.size, symbol, self.data.close[0]))
+                print("BUY {} shares of {} at {}".format(self.size, symbol, self.data.close[0]))
                 self.buy(size=self.size)
-                print("BUY")
                 
-            else:
+                self.last_call = trigger
+                
+            elif trigger == "SELL":
                 amount_to_invest = (self.order_pct * self.broker.cash)
                 self.size = math.floor(amount_to_invest / self.data.close)
 
-                print("Sell {} shares of {} at {}".format(self.size, symbol, self.data.close[0]))
+                print("SELL {} shares of {} at {}".format(self.size, symbol, self.data.close[0]))
                 self.sell(size=self.size)
-                print("SELL")
+                
+                self.last_call = trigger
         else:
-            if self.last_call == 'BUY' and self.bot.strat(self.i)[0] == 'SELL':
+            if self.last_call == 'BUY' and trigger == 'SELL':
                 self.close()
                 print("Close Positions")
                 
-            elif self.last_call == 'SELL' and self.bot.strat(self.i)[0] == 'BUY':
+            elif self.last_call == 'SELL' and trigger == 'BUY':
                 self.close()
                 print("Close Positions")
-            else:
-                print("HOLD")
-        
-        self.last_call = self.bot.strat(self.i)[0]
+                
         self.i += 1
 
 global symbol
@@ -88,7 +88,7 @@ cerebro = bt.Cerebro()
 cerebro.addstrategy(Supertrend)
 cerebro.broker.setcash(10000.0)
 
-dataframe = yf.download(symbol, start='2021-01-01', end='2021-04-05', interval='1d')
+dataframe = yf.download(symbol, start='2020-04-07', end='2020-12-07', interval='1d')
 dataframe.to_csv('backtesting_data.csv', encoding='utf-8')
 
 data = bt.feeds.PandasData(dataname=dataframe)    
@@ -98,4 +98,4 @@ print("Data Imported")
 print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
 cerebro.run()
 print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
-cerebro.plot(style='candlestick', barup='green', bardown='red')
+cerebro.plot(style='candlestick', barup='green', bardown='red', volume=False)
