@@ -1,5 +1,6 @@
 #Test files
 test.py
+backtesting_data.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

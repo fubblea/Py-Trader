@@ -66,10 +66,10 @@ class Bot(object):
             print(f"[{datetime.datetime.now()}]")
             print(f"Sold {target} shares in {self.symbol}")
             
-    def analysis(self, backtest_data=[]):
+    def analysis(self):
         
         if self.backtest == True:
-            data = backtest_data
+            data = pd.read_csv('backtesting_data.csv')
             data=data.reset_index()
         else:
             with print_supress.suppress_stdout_stderr():
@@ -157,9 +157,9 @@ class Bot(object):
         
         return data
 
-    def strat(self, backtest_data=[]):
+    def strat(self):
         bias = trend.find_bias(self.symbol)
-        data = self.analysis(backtest_data)
+        data = self.analysis()
         
         trigger = data.iloc[-1, -1]
         
