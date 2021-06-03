@@ -87,6 +87,8 @@ symbol = 'AAPL'
 
 cerebro = bt.Cerebro()
 cerebro.addstrategy(Supertrend)
+cerebro.addanalyzer(bt.analyzers.SharpeRatio, _name='mysharpe')
+cerebro.addanalyzer(bt.analyzers.PyFolio, _name='pyfolio')
 cerebro.broker.setcash(10000.0)
 
 dataframe = yf.download(symbol, start='2020-01-01', end='2020-03-30', interval='1d')
@@ -97,6 +99,24 @@ cerebro.adddata(data)
 print("Data Imported")
 
 print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
-cerebro.run()
+strat = cerebro.run()
 print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
-cerebro.plot(style='candlestick', barup='green', bardown='red', volume=False)
+#cerebro.plot(style='candlestick', barup='green', bardown='red', volume=False)
+
+# Print out the final result
+print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
+print('Sharpe Ratio:', strat[0].analyzers.mysharpe.get_analysis())
+strat[0].analyzers.mysharpe.pprint()
+pyfoliozer = strat[0].analyzers.getbyname('pyfolio')
+returns, positions, transactions, gross_lev = pyfoliozer.get_pf_items()
+import pyfolio as pf
+pf.create_full_tear_sheet(
+    returns,
+    positions=positions,
+    transactions=transactions,
+    #gross_lev=gross_lev,
+    live_start_date='2008-01-01',  # This date is sample specific
+    round_trips=True)
+
+pf.create_simple_tear_sheet(returns)
+pf.create_returns_tear_sheet(returns)
