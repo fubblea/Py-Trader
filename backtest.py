@@ -2,6 +2,7 @@ import backtrader as bt
 import backtrader.indicators as btind
 import math
 import supertrend
+import pyfolio as pf
 import trend
 import yfinance as yf
 import pandas as pd
@@ -87,7 +88,6 @@ symbol = 'AAPL'
 
 cerebro = bt.Cerebro()
 cerebro.addstrategy(Supertrend)
-cerebro.addanalyzer(bt.analyzers.SharpeRatio, _name='mysharpe')
 cerebro.addanalyzer(bt.analyzers.PyFolio, _name='pyfolio')
 cerebro.broker.setcash(10000.0)
 
@@ -105,18 +105,12 @@ print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
 
 # Print out the final result
 print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
-print('Sharpe Ratio:', strat[0].analyzers.mysharpe.get_analysis())
-strat[0].analyzers.mysharpe.pprint()
 pyfoliozer = strat[0].analyzers.getbyname('pyfolio')
 returns, positions, transactions, gross_lev = pyfoliozer.get_pf_items()
-import pyfolio as pf
-pf.create_full_tear_sheet(
-    returns,
-    positions=positions,
-    transactions=transactions,
-    #gross_lev=gross_lev,
-    live_start_date='2008-01-01',  # This date is sample specific
-    round_trips=True)
+
+returns.index = returns.index.tz_convert(None)
+positions.index = positions.index.tz_convert(None)
+transactions.index = transactions.index.tz_convert(None)
 
 pf.create_simple_tear_sheet(returns)
 pf.create_returns_tear_sheet(returns)
