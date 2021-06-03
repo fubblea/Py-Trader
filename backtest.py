@@ -3,6 +3,7 @@ import backtrader.indicators as btind
 import math
 import supertrend
 import trend
+import quantstats as qs
 import yfinance as yf
 import pandas as pd
 
