@@ -11,34 +11,8 @@ import os
 import alpaca_trade_api as alpaca
 
 
-class DummyDifferenceDivider(bt.Indicator):
-    lines = ('diffdiv',)  # output line (array)
-
-    def __init__(self):
-        diff = self.data(0) - self.data(-3)
-        diffdiv = diff / 2
-        
-        print(diffdiv)
-        self.lines.diffdiv = diffdiv
-        
-class SupertrendLine(bt.Indicator):
-    lines = ('supertrend',)  # output line (array)
-    def __init__(self):
-        dotenv.load_dotenv()
-        api = alpaca.REST(os.getenv("API_KEY"), os.getenv("SECRET_KEY"), os.getenv("ENDPOINT"))
-        self.bot = supertrend.Bot(api=api, symbol=symbol, backtest=True)
-        
-        self.st_data = self.bot.analysis()['ST'].tolist() + self.data
-        self.st_data = self.st_data - self.data
-        
-        self.lines.supertrend = self.st_data
-
 class Supertrend(bt.Strategy):
-    
-    def __init__(self):
-        #DummyDifferenceDivider(self.data)
-        #SupertrendLine(self.data)
-        
+    def __init__(self):        
         dotenv.load_dotenv()
         api = alpaca.REST(os.getenv("API_KEY"), os.getenv("SECRET_KEY"), os.getenv("ENDPOINT"))
         self.bot = supertrend.Bot(api=api, symbol=symbol, backtest=True)
