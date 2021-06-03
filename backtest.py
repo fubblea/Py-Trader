@@ -53,7 +53,7 @@ class Supertrend(bt.Strategy):
         trigger = self.bot.analysis().iloc[self.i]['ST_BUY_SELL']
         bias = trend.find_bias(symbol, backtest_data=self.backtest_data, backtest=True)
         
-        if self.position.size == 0:                
+        if self.position.size == 0 and self.i > self.bot.lookback:                
             if trigger == "BUY" and bias == 'BUY':
                 amount_to_invest = (self.order_pct * self.broker.cash)
                 self.size = math.floor(amount_to_invest / self.data.close)
@@ -89,7 +89,7 @@ cerebro = bt.Cerebro()
 cerebro.addstrategy(Supertrend)
 cerebro.broker.setcash(10000.0)
 
-dataframe = yf.download(symbol, start='2020-01-01', end='2020-12-30', interval='1d')
+dataframe = yf.download(symbol, start='2020-01-01', end='2020-03-30', interval='1d')
 dataframe.to_csv('backtesting_data.csv', encoding='utf-8')
 
 data = bt.feeds.PandasData(dataname=dataframe)    
