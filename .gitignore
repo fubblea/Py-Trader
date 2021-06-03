@@ -1,7 +1,7 @@
 #Test files
 test.py
 backtesting_data.csv
-teardown.html
+tearsheet.html
 backtrader_plot.png
 
 # Byte-compiled / optimized / DLL files
