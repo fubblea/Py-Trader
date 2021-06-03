@@ -12,6 +12,7 @@ pandas-datareader = "*"
 ta = "*"
 backtrader = {extras = ["plotting"], version = "*"}
 matplotlib = "==3.2.2"
+pyfolio = "*"
 
 [dev-packages]
 
