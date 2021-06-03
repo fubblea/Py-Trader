@@ -18,11 +18,11 @@ class Supertrend(bt.Strategy):
     
     def next(self):
         print(self.datetime.date(ago=0))
-        print(self.bot.analysis().iloc[self.i]['ST_BUY_SELL'])
+        print(self.bot.strat(self.i)[0])
         
-        if self.bot.analysis().iloc[self.i]['ST_BUY_SELL'] == 'BUY':
+        if self.bot.strat(self.i)[0] == 'BUY':
             self.buy()
-        elif self.bot.analysis().iloc[self.i]['ST_BUY_SELL'] == 'SELL':
+        elif self.bot.strat(self.i)[0] == 'SELL':
             self.sell()
         
         self.i += 1
