@@ -2,7 +2,9 @@ import backtrader as bt
 import backtrader.indicators as btind
 import math
 import supertrend
+import trend
 import yfinance as yf
+import pandas as pd
 
 import dotenv
 import os
@@ -43,17 +45,16 @@ class Supertrend(bt.Strategy):
         self.i = 0
         self.last_call = 'HOLD'
         self.order_pct = 1
+        self.backtest_data = pd.read_csv('backtesting_data.csv')
     
     def next(self):
         print(self.datetime.date(ago=0))
+        
         trigger = self.bot.analysis().iloc[self.i]['ST_BUY_SELL']
+        bias = trend.find_bias(symbol, backtest_data=self.backtest_data, backtest=True)
         
         if self.position.size == 0:                
-            if trigger == 'HOLD':
-                pass
-                print("HOLD")
-                
-            elif trigger == "BUY":
+            if trigger == "BUY" and bias == 'BUY':
                 amount_to_invest = (self.order_pct * self.broker.cash)
                 self.size = math.floor(amount_to_invest / self.data.close)
 
@@ -62,7 +63,7 @@ class Supertrend(bt.Strategy):
                 
                 self.last_call = trigger
                 
-            elif trigger == "SELL":
+            elif trigger == "SELL" and bias == 'SELL':
                 amount_to_invest = (self.order_pct * self.broker.cash)
                 self.size = math.floor(amount_to_invest / self.data.close)
 
@@ -88,7 +89,7 @@ cerebro = bt.Cerebro()
 cerebro.addstrategy(Supertrend)
 cerebro.broker.setcash(10000.0)
 
-dataframe = yf.download(symbol, start='2020-04-07', end='2020-12-07', interval='1d')
+dataframe = yf.download(symbol, start='2020-01-01', end='2020-12-30', interval='1d')
 dataframe.to_csv('backtesting_data.csv', encoding='utf-8')
 
 data = bt.feeds.PandasData(dataname=dataframe)    
