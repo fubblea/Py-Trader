@@ -9,8 +9,6 @@ import supertrend
 
 #Matty the trading bot
 
-#Change 1
-
 def get_watchlist(api):
     watchlist = api.get_watchlists()[0]
     print(watchlist)
