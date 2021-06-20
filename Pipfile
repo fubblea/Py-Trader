@@ -16,6 +16,7 @@ pyfolio = "*"
 ipykernel = "*"
 
 [dev-packages]
+websockets = ">=9.1"
 
 [requires]
 python_version = "3.9"
