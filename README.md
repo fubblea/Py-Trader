@@ -7,4 +7,5 @@
 ## Installation
 
 1. Clone repo
-2. Run `pipenv install`
+2. Run `pip install pipenv`
+3. Run `pipenv install`
