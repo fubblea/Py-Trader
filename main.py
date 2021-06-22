@@ -6,22 +6,9 @@ import alpaca_trade_api as alpaca
 import dotenv
 
 import supertrend
+import watchlist
 
 #Matty the trading bot
-
-def get_watchlist(api):
-    watchlist = api.get_watchlists()[0]
-    print(watchlist)
-    symbols = []
-    
-    try:
-        for item in watchlist.assets:
-            symbols.append(item['symbol'])
-    
-        return symbols
-    except AttributeError:
-        print("Watchlist Empty")
-        sys.exit()
 
 if __name__ == '__main__':    
     parser = argparse.ArgumentParser()
@@ -33,13 +20,13 @@ if __name__ == '__main__':
     api = alpaca.REST(os.getenv("API_KEY"), os.getenv("SECRET_KEY"), os.getenv("ENDPOINT"))
     
     #TODO Fix watchlist not working
-    watchlist = get_watchlist(api)
+    wl = watchlist.get_watchlist(api)
     
     #Watchlist Override
-    watchlist = ['TSLA', 'NVDA']
+    wl = ['TSLA', 'NVDA']
     active_bots = []
     
-    if api.get_clock().is_open():
+    if api.get_clock().is_open:
         for symbol in watchlist:
             active_bots.append(supertrend.Bot(symbol, api, target=args.target, bias_bypass=args.b))
     else:
