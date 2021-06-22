@@ -14,6 +14,8 @@ backtrader = {extras = ["plotting"], version = "*"}
 matplotlib = "==3.2.2"
 pyfolio = "*"
 ipykernel = "*"
+requests = "*"
+yahoo-fin = "*"
 
 [dev-packages]
 websockets = ">=9.1"
