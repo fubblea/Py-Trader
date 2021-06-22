@@ -1,15 +1,16 @@
-import sys
+import yahoo_fin.stock_info as yf
+import pandas as pd
 
-def get_watchlist(api):
-    watchlist = api.get_watchlists()[0]
-    print(watchlist)
-    symbols = []
+def get_watchlist():
+    day_gainers = pd.DataFrame(yf.get_day_gainers())
     
-    try:
-        for item in watchlist.assets:
-            symbols.append(item['symbol'])
+    target_pc_change = 20
+    target_volume = 1000000
     
-        return symbols
-    except AttributeError:
-        print("Watchlist Empty")
-        sys.exit()
+    watchlist = []
+    
+    for index, row in day_gainers.iterrows():
+        if row['% Change'] >= target_pc_change and row['Volume'] >= target_volume:
+            watchlist.append(row['Symbol'])
+    
+    return watchlist

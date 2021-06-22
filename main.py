@@ -6,7 +6,7 @@ import alpaca_trade_api as alpaca
 import dotenv
 
 import supertrend
-import watchlist
+from watchlist import get_watchlist
 
 #Matty the trading bot
 
@@ -19,11 +19,8 @@ if __name__ == '__main__':
     dotenv.load_dotenv()
     api = alpaca.REST(os.getenv("API_KEY"), os.getenv("SECRET_KEY"), os.getenv("ENDPOINT"))
     
-    #TODO Fix watchlist not working
-    wl = watchlist.get_watchlist(api)
-    
-    #Watchlist Override
-    wl = ['TSLA', 'NVDA']
+    watchlist = get_watchlist()
+    print(f"Watching {watchlist}")
     active_bots = []
     
     if api.get_clock().is_open:
