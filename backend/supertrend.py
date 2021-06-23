@@ -6,9 +6,9 @@ import pandas as pd
 import pandas_datareader as pdr
 import yfinance as yf
 
-import indicators
-import print_supress
-import trend
+from backend import indicators
+from backend import print_supress
+from backend import trend
 
 
 class Bot(object):    

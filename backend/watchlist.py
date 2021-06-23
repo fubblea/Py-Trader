@@ -2,6 +2,7 @@ import yahoo_fin.stock_info as yf
 import pandas as pd
 
 def get_watchlist():
+    print("Generating watchlist")
     day_gainers = pd.DataFrame(yf.get_day_gainers())
     
     target_pc_change = 20
