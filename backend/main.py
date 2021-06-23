@@ -1,12 +1,13 @@
 import argparse
 import os
 import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import alpaca_trade_api as alpaca
 import dotenv
 
-import supertrend
-from watchlist import get_watchlist
+from backend import supertrend
+from backend.watchlist import get_watchlist
 
 #Matty the trading bot
 

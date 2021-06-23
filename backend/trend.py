@@ -3,7 +3,7 @@ import warnings
 import ta
 import yfinance as yf
 
-import print_supress
+from backend import print_supress
 
 
 def find_bias(symbol, backtest=False, backtest_data=[]):

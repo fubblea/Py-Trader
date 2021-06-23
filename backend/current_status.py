@@ -1,8 +1,8 @@
 import argparse
 
-import supertrend
-import graph
-import trend
+from backend import supertrend
+from backend import graph
+from backend import trend
 
 parser = argparse.ArgumentParser()
 parser.add_argument("symbol", help="The symbol you want the bot to focus on")
