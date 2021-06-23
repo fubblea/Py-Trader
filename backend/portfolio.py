@@ -1,7 +1,6 @@
 
 from numpy import floor
 
-
 class Portfolio():
     def __init__(self, data, api) -> None:
         self.data = data
@@ -19,5 +18,4 @@ class Portfolio():
         else:
             target_shares = floor(target_shares)
         
-        print (target_shares)
         return target_shares
