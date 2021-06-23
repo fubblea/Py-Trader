@@ -1,18 +1,17 @@
 import datetime
 import time
 
-import numpy as np
 import pandas as pd
-import pandas_datareader as pdr
 import yfinance as yf
 
 from backend import indicators
 from backend import print_supress
 from backend import trend
+from backend import portfolio
 
 
 class Bot(object):    
-    def __init__ (self, symbol, api, target=10, period='2d', interval='15m', lookback=10, multiplier=3, bias_bypass=False, backtest=False):
+    def __init__ (self, symbol, api, period='2d', interval='15m', lookback=10, multiplier=3, bias_bypass=False, backtest=False):
         """Bot running on the supertrend algorithm
 
         Args:
@@ -29,7 +28,7 @@ class Bot(object):
         self.multiplier = multiplier
         self.interval = interval
         self.current_order = None
-        self.target = target
+        self.target = 0
         self.bias_bypass = bias_bypass
         self.backtest = backtest
     
@@ -177,6 +176,7 @@ class Bot(object):
     def evaluate(self):
         strat = self.strat()
         position = self.get_positions()
+        self.target = portfolio.Portfolio(strat[1], self.api).target_shares()
             
         if len(position) == 0:                
             if strat[0] == 'HOLD':

@@ -26,7 +26,7 @@ if __name__ == '__main__':
     
     if api.get_clock().is_open:
         for symbol in watchlist:
-            active_bots.append(supertrend.Bot(symbol, api, target=args.target, bias_bypass=args.b))
+            active_bots.append(supertrend.Bot(symbol, api, bias_bypass=args.b))
     else:
         print("Market Closed")
         sys.exit()
