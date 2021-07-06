@@ -1,18 +1,18 @@
 import datetime
 import time
 
-import numpy as np
 import pandas as pd
-import pandas_datareader as pdr
 import yfinance as yf
 
-import indicators
-import print_supress
-import trend
+from backend import indicators
+from backend import print_supress
+from backend import trend
+from backend import portfolio
+from backend import ib_api
 
 
 class Bot(object):    
-    def __init__ (self, symbol, api, target=10, period='2d', interval='15m', lookback=10, multiplier=3, bias_bypass=False, backtest=False):
+    def __init__ (self, symbol, secType='STK', currency='USD', period='2d', interval='15m', lookback=6, multiplier=3, bias_bypass=False, backtest=False):
         """Bot running on the supertrend algorithm
 
         Args:
@@ -22,49 +22,54 @@ class Bot(object):
             lookback (int, optional): Lookback. Defaults to 10.
             multiplier (int, optional): Multiplier. Defaults to 3.
         """
-        self.api = api
         self.symbol = symbol
         self.period = period
         self.lookback = lookback
         self.multiplier = multiplier
         self.interval = interval
         self.current_order = None
-        self.target = target
+        self.target = 0
         self.bias_bypass = bias_bypass
         self.backtest = backtest
+        self.secType = secType
+        
+        if secType == 'STK':
+            self.exchange = 'SMART'
+        elif secType == 'CASH':
+            self.exchange = 'IDEALPRO'
+        
+        self.currency = currency
     
     def close_all(self):
-        if len(self.api.list_positions()) > 0:
-            self.api.close_all_positions()
-            print("Closed all open positions")
-    
+        current_positions = self.get_positions()
+
+        for index, row in current_positions.iterrows():
+            if row['Sec Type'] == "STK":
+                exchange = 'SMART'
+            elif row['Sec Type'] == 'CASH':
+                exchange = "IDEALPRO"
+                
+            if row['Quantity'] < 0:
+                ib_api.submit_order(row['Symbol'], 'SELL', row['Quantity'], secType=row['Sec Type'], exchange=exchange)
+            elif row['Quantity'] > 0:
+                ib_api.submit_order(row['Symbol'], 'BUY', row['Quantity'], secType=row['Sec Type'], exchange=exchange)
+            
     def get_positions(self):
-        return self.api.list_positions()
+        pos = ib_api.read_positions().loc[['DU4129866']]
+        pos.reset_index(drop=True, inplace=True)
+        
+        for index, row in pos.iterrows():
+            if row['Quantity'] == 0:
+                pos = pos.drop(index)
+        
+        return pos
         
     def print_positions(self):
         print("Open Positions:")
-        time.sleep(1)
         print(self.get_positions())
     
     def submit_order(self, side, target):
-        if side == "BUY":
-            self.current_order = self.api.submit_order(symbol=self.symbol, 
-                                                       qty=target, 
-                                                       side='buy',
-                                                       time_in_force='fok',
-                                                       type='market')
-            
-            print(f"[{datetime.datetime.now()}]")
-            print(f"Bought {target} shares in {self.symbol}")
-            
-        elif side == "SELL":
-            self.current_order = self.api.submit_order(symbol=self.symbol, 
-                                                       qty=target, 
-                                                       side='sell',
-                                                       time_in_force='fok',
-                                                       type='market')
-            print(f"[{datetime.datetime.now()}]")
-            print(f"Sold {target} shares in {self.symbol}")
+        self.current_order = ib_api.submit_order(self.symbol, side, target, self.secType, self.exchange, self.currency)
             
     def analysis(self):
         
@@ -73,7 +78,12 @@ class Bot(object):
             data=data.reset_index()
         else:
             with print_supress.suppress_stdout_stderr():
-                data =yf.download(self.symbol, period=self.period,interval=self.interval)
+                if self.secType == 'CASH':
+                    symbol = self.symbol + self.currency + '=X'
+                else:
+                    symbol = self.symbol
+                
+                data =yf.download(symbol, period=self.period,interval=self.interval)
                 data=data.reset_index()
         
         multiplier = self.multiplier
@@ -90,8 +100,8 @@ class Bot(object):
 
         indicators.eATR(data, period)
         
-        data['BUB'] = round(((data["High"] + data["Low"]) / 2) + (multiplier * data["EMA"]),2)
-        data['BLB'] = round(((data["High"] + data["Low"]) / 2) - (multiplier * data["EMA"]),2)
+        data['BUB'] = ((data["High"] + data["Low"]) / 2) + (multiplier * data["EMA"])
+        data['BLB'] = ((data["High"] + data["Low"]) / 2) - (multiplier * data["EMA"])
 
 
         # FINAL UPPERBAND = IF( (Current BASICUPPERBAND < Previous FINAL UPPERBAND) or (Previous Close > Previous FINAL UPPERBAND))
@@ -154,11 +164,16 @@ class Bot(object):
                 data.loc[i,"ST_BUY_SELL"]="BUY"
             else:
                 data.loc[i,"ST_BUY_SELL"]="SELL"
-        
+    
         return data
 
     def strat(self):
-        bias = trend.find_bias(self.symbol)
+        if self.secType == 'CASH':
+            symbol = self.symbol + self.currency + '=X'
+        else:
+            symbol = self.symbol
+        bias = trend.find_bias(symbol)
+        
         data = self.analysis()
         
         trigger = data.iloc[-1, -1]
@@ -177,6 +192,7 @@ class Bot(object):
     def evaluate(self):
         strat = self.strat()
         position = self.get_positions()
+        self.target = portfolio.Portfolio(strat[1]).target_shares()
             
         if len(position) == 0:                
             if strat[0] == 'HOLD':
@@ -190,8 +206,9 @@ class Bot(object):
                 self.submit_order("SELL", self.target)
                 self.print_positions()
         else:
-            if position[0].side == 'long' and strat[0] == 'sell':
-                self.close_all()
-                
-            elif position[0].side == 'short' and strat[0] == 'buy':
-                self.close_all()
+            for index, row in position.iterrows():
+                if row['Quantity'] > 0 and strat[0] == 'sell':
+                    self.close_all()
+                    
+                if row['Quantity'] < 0 and strat[0] == 'buy':
+                    self.close_all()

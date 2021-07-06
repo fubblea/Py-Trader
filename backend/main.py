@@ -1,12 +1,13 @@
 import argparse
 import os
 import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import alpaca_trade_api as alpaca
 import dotenv
 
-import supertrend
-from watchlist import get_watchlist
+from backend import supertrend
+from backend.watchlist import get_watchlist
 
 #Matty the trading bot
 
@@ -25,7 +26,7 @@ if __name__ == '__main__':
     
     if api.get_clock().is_open:
         for symbol in watchlist:
-            active_bots.append(supertrend.Bot(symbol, api, target=args.target, bias_bypass=args.b))
+            active_bots.append(supertrend.Bot(symbol, bias_bypass=args.b))
     else:
         print("Market Closed")
         sys.exit()
