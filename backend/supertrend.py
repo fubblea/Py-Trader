@@ -8,10 +8,11 @@ from backend import indicators
 from backend import print_supress
 from backend import trend
 from backend import portfolio
+from backend import ib_api
 
 
 class Bot(object):    
-    def __init__ (self, symbol, api, period='2d', interval='15m', lookback=10, multiplier=3, bias_bypass=False, backtest=False):
+    def __init__ (self, symbol, secType='STK', currency='USD', period='2d', interval='15m', lookback=10, multiplier=3, bias_bypass=False, backtest=False):
         """Bot running on the supertrend algorithm
 
         Args:
@@ -21,7 +22,6 @@ class Bot(object):
             lookback (int, optional): Lookback. Defaults to 10.
             multiplier (int, optional): Multiplier. Defaults to 3.
         """
-        self.api = api
         self.symbol = symbol
         self.period = period
         self.lookback = lookback
@@ -31,39 +31,38 @@ class Bot(object):
         self.target = 0
         self.bias_bypass = bias_bypass
         self.backtest = backtest
+        self.secType = secType
+        
+        if secType == 'STK':
+            self.exchange = 'SMART'
+        elif secType == 'CASH':
+            self.exchange = 'IDEALPRO'
+        
+        self.currency = currency
     
     def close_all(self):
-        if len(self.api.list_positions()) > 0:
-            self.api.close_all_positions()
-            print("Closed all open positions")
-    
+        current_positions = ib_api.read_positions().loc[['DU4129866']]
+
+        for index, row in current_positions.iterrows():
+            if row['Sec Type'] == "STK":
+                exchange = 'SMART'
+            elif row['Sec Type'] == 'CASH':
+                exchange = "IDEALPRO"
+                
+            if row['Quantity'] < 0:
+                ib_api.submit_order(row['Symbol'], 'SELL', row['Quantity'], secType=row['Sec Type'], exchange=exchange)
+            elif row['Quantity'] > 0:
+                ib_api.submit_order(row['Symbol'], 'BUY', row['Quantity'], secType=row['Sec Type'], exchange=exchange)
+            
     def get_positions(self):
-        return self.api.list_positions()
+        return ib_api.read_positions()
         
     def print_positions(self):
         print("Open Positions:")
-        time.sleep(1)
         print(self.get_positions())
     
     def submit_order(self, side, target):
-        if side == "BUY":
-            self.current_order = self.api.submit_order(symbol=self.symbol, 
-                                                       qty=target, 
-                                                       side='buy',
-                                                       time_in_force='fok',
-                                                       type='market')
-            
-            print(f"[{datetime.datetime.now()}]")
-            print(f"Bought {target} shares in {self.symbol}")
-            
-        elif side == "SELL":
-            self.current_order = self.api.submit_order(symbol=self.symbol, 
-                                                       qty=target, 
-                                                       side='sell',
-                                                       time_in_force='fok',
-                                                       type='market')
-            print(f"[{datetime.datetime.now()}]")
-            print(f"Sold {target} shares in {self.symbol}")
+        self.current_order = ib_api.submit_order(self.symbol, side, target, self.secType, self.exchange, self.currency)
             
     def analysis(self):
         
@@ -157,13 +156,14 @@ class Bot(object):
         return data
 
     def strat(self):
-        bias = trend.find_bias(self.symbol)
         data = self.analysis()
         
         trigger = data.iloc[-1, -1]
         
         if self.bias_bypass == True:
             return ['BUY', data]
+        else:
+            bias = trend.find_bias(self.symbol)
         
         if len(self.get_positions()) == 0:
             if bias == trigger:
@@ -176,7 +176,7 @@ class Bot(object):
     def evaluate(self):
         strat = self.strat()
         position = self.get_positions()
-        self.target = portfolio.Portfolio(strat[1], self.api).target_shares()
+        self.target = portfolio.Portfolio(strat[1]).target_shares()
             
         if len(position) == 0:                
             if strat[0] == 'HOLD':
