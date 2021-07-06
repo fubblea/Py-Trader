@@ -85,9 +85,6 @@ class Bot(object):
                 
                 data =yf.download(symbol, period=self.period,interval=self.interval)
                 data=data.reset_index()
-                
-                #TEMP
-                print(data)
         
         multiplier = self.multiplier
         period = self.lookback
@@ -103,8 +100,8 @@ class Bot(object):
 
         indicators.eATR(data, period)
         
-        data['BUB'] = round(((data["High"] + data["Low"]) / 2) + (multiplier * data["EMA"]),2)
-        data['BLB'] = round(((data["High"] + data["Low"]) / 2) - (multiplier * data["EMA"]),2)
+        data['BUB'] = ((data["High"] + data["Low"]) / 2) + (multiplier * data["EMA"])
+        data['BLB'] = ((data["High"] + data["Low"]) / 2) - (multiplier * data["EMA"])
 
 
         # FINAL UPPERBAND = IF( (Current BASICUPPERBAND < Previous FINAL UPPERBAND) or (Previous Close > Previous FINAL UPPERBAND))
@@ -168,6 +165,8 @@ class Bot(object):
             else:
                 data.loc[i,"ST_BUY_SELL"]="SELL"
         
+        #TEMP
+        print(data)
         return data
 
     def strat(self):

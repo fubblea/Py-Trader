@@ -1,24 +1,24 @@
 import argparse
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 from backend import supertrend
 from backend import graph
 from backend import trend
 
-parser = argparse.ArgumentParser()
+"""parser = argparse.ArgumentParser()
 parser.add_argument("symbol", help="The symbol you want the bot to focus on")
 args = parser.parse_args()
 
-symbol = args.symbol
-t = supertrend.Bot(symbol)
+symbol = args.symbol"""
 
-if t.trading_window():
-    data = t.analysis()
+#!OVERRIDE
+symbol = "EUR"
+t = supertrend.Bot(symbol, secType='CASH')
 
-    print(f"{trend.find_bias(symbol)} bias")
-    print(t.print_positions())
+data = t.analysis()
 
-    graph.plot(data, symbol)
+print(t.print_positions())
 
-else:
-    print("Waiting for trading window to open")
-    print(t.print_positions())
+graph.plot(data, symbol)
