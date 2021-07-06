@@ -1,14 +1,13 @@
-
+from backend import ib_api
 from numpy import floor
 
 class Portfolio():
-    def __init__(self, data, api) -> None:
+    def __init__(self, data) -> None:
         self.data = data
-        self.api = api
         
     def target_shares(self):
         risk = 0.01
-        cash = float(self.api.get_account().cash)
+        cash = float(ib_api.read_navs().loc['DU4129866']['Value'])
         cost_per_share = self.data['Close'].iloc[-1]
         
         target_shares = (cash * risk) / cost_per_share
