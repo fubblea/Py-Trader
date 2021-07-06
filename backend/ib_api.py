@@ -62,6 +62,8 @@ def submit_order(symbol, action, quantity, secType='STK', exchange='SMART', curr
     #Place order
     app.placeOrder(app.nextorderId, contract, order)
     app.nextorderId += 1 
+    
+    time.sleep(3)
 
     app.disconnect()
 

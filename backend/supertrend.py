@@ -12,7 +12,7 @@ from backend import ib_api
 
 
 class Bot(object):    
-    def __init__ (self, symbol, secType='STK', currency='USD', period='2d', interval='15m', lookback=10, multiplier=3, bias_bypass=False, backtest=False):
+    def __init__ (self, symbol, secType='STK', currency='USD', period='2d', interval='15m', lookback=6, multiplier=3, bias_bypass=False, backtest=False):
         """Bot running on the supertrend algorithm
 
         Args:
@@ -164,9 +164,7 @@ class Bot(object):
                 data.loc[i,"ST_BUY_SELL"]="BUY"
             else:
                 data.loc[i,"ST_BUY_SELL"]="SELL"
-        
-        #TEMP
-        print(data)
+    
         return data
 
     def strat(self):
