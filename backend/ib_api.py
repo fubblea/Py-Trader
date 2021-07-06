@@ -1,12 +1,12 @@
-from ibapi.client import EClient
-from ibapi.wrapper import EWrapper
-from ibapi.contract import Contract
 from ibapi.order import *
 
-import threading
-import time
-
 def submit_order(symbol, action, quantity, secType='STK', exchange='SMART', currency='USD'):
+    from ibapi.client import EClient
+    from ibapi.wrapper import EWrapper
+    from ibapi.contract import Contract
+
+    import threading
+    import time
     class IBapi(EWrapper, EClient):
         def __init__(self):
             EClient.__init__(self, self)
@@ -101,7 +101,6 @@ def read_positions(): #read all accounts positions and return DataFrame with inf
     time.sleep(1) #Sleep interval to allow time for connection to server
 
     app.reqPositions() # associated callback: position
-    print("Waiting for IB's API response for accounts positions requests...\n")
     time.sleep(3)
     current_positions = app.all_positions
     current_positions.set_index('Account',inplace=True,drop=True) #set all_positions DataFrame index to "Account"
@@ -147,10 +146,62 @@ def read_navs(): #read all accounts NAVs
     time.sleep(1) #Sleep interval to allow time for connection to server
 
     app.reqAccountSummary(0,"All","NetLiquidation")  # associated callback: accountSummary / Can use "All" up to 50 accounts; after that might need to use specific group name(s) created on TWS workstation
-    print("Waiting for IB's API response for NAVs requests...\n")
     time.sleep(3)
     current_nav = app.all_accounts
     
     app.disconnect()
 
     return(current_nav)
+
+def get_bars():
+    from ibapi.client import EClient
+    from ibapi.client import EClient
+    from ibapi.wrapper import EWrapper
+    from ibapi.contract import Contract
+
+    import threading
+    import time
+
+    class IBapi(EWrapper, EClient):
+        def __init__(self):
+            EClient.__init__(self, self)
+            self.data = [] #Initialize variable to store candle
+
+        def historicalData(self, reqId, bar):
+            print(f'Time: {bar.date} Close: {bar.close}')
+            self.data.append([bar.date, bar.close])
+            
+    def run_loop():
+        app.run()
+
+    app = IBapi()
+    app.connect('127.0.0.1', 7497, 123)
+
+    #Start the socket in a thread
+    api_thread = threading.Thread(target=run_loop, daemon=True)
+    api_thread.start()
+
+    time.sleep(1) #Sleep interval to allow time for connection to server
+
+    #Create contract object
+    eurusd_contract = Contract()
+    eurusd_contract.symbol = 'TSLA'
+    eurusd_contract.secType = 'STK'
+    eurusd_contract.exchange = 'SMART'
+    eurusd_contract.currency = 'USD'
+
+    #Request historical candles
+    app.reqHistoricalData(1, eurusd_contract, '', '1 W', '1 hour', 'TRADES', 0, 2, False, [])
+
+    time.sleep(5) #sleep to allow enough time for data to be returned
+
+    #Working with Pandas DataFrames
+    import pandas
+
+    df = pandas.DataFrame(app.data, columns=['DateTime', 'Close'])
+    df['DateTime'] = pandas.to_datetime(df['DateTime'],unit='s') 
+
+    print(df)
+
+
+    app.disconnect()

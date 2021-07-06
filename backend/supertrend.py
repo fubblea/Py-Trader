@@ -41,7 +41,7 @@ class Bot(object):
         self.currency = currency
     
     def close_all(self):
-        current_positions = ib_api.read_positions().loc[['DU4129866']]
+        current_positions = self.get_positions()
 
         for index, row in current_positions.iterrows():
             if row['Sec Type'] == "STK":
@@ -55,7 +55,14 @@ class Bot(object):
                 ib_api.submit_order(row['Symbol'], 'BUY', row['Quantity'], secType=row['Sec Type'], exchange=exchange)
             
     def get_positions(self):
-        return ib_api.read_positions()
+        pos = ib_api.read_positions().loc[['DU4129866']]
+        pos.reset_index(drop=True, inplace=True)
+        
+        for index, row in pos.iterrows():
+            if row['Quantity'] == 0:
+                pos = pos.drop(index)
+        
+        return pos
         
     def print_positions(self):
         print("Open Positions:")
@@ -71,8 +78,16 @@ class Bot(object):
             data=data.reset_index()
         else:
             with print_supress.suppress_stdout_stderr():
-                data =yf.download(self.symbol, period=self.period,interval=self.interval)
+                if self.secType == 'CASH':
+                    symbol = self.symbol + self.currency + '=X'
+                else:
+                    symbol = self.symbol
+                
+                data =yf.download(symbol, period=self.period,interval=self.interval)
                 data=data.reset_index()
+                
+                #TEMP
+                print(data)
         
         multiplier = self.multiplier
         period = self.lookback
@@ -156,14 +171,18 @@ class Bot(object):
         return data
 
     def strat(self):
+        if self.secType == 'CASH':
+            symbol = self.symbol + self.currency + '=X'
+        else:
+            symbol = self.symbol
+        bias = trend.find_bias(symbol)
+        
         data = self.analysis()
         
         trigger = data.iloc[-1, -1]
         
         if self.bias_bypass == True:
             return ['BUY', data]
-        else:
-            bias = trend.find_bias(self.symbol)
         
         if len(self.get_positions()) == 0:
             if bias == trigger:
@@ -190,8 +209,9 @@ class Bot(object):
                 self.submit_order("SELL", self.target)
                 self.print_positions()
         else:
-            if position[0].side == 'long' and strat[0] == 'sell':
-                self.close_all()
-                
-            elif position[0].side == 'short' and strat[0] == 'buy':
-                self.close_all()
+            for index, row in position.iterrows():
+                if row['Quantity'] > 0 and strat[0] == 'sell':
+                    self.close_all()
+                    
+                if row['Quantity'] < 0 and strat[0] == 'buy':
+                    self.close_all()
