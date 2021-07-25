@@ -17,6 +17,7 @@ ipykernel = "*"
 requests = "*"
 yahoo-fin = "*"
 ibapi = "*"
+psycopg2 = "*"
 
 [dev-packages]
 websockets = ">=9.1"
